@@ -112,6 +112,33 @@ city_all <- city_all %>%
                 cotis_fonciere_entreprise=as.numeric(cotis_fonciere_entreprise),
                 taxe_surface_commerciales = as.numeric(taxe_surface_commerciales))
 
+# Utilisation des données des collectivités locales
+library(plyr)
+
+
+
+setwd("//paradis/eleves/QDUCO/GitHub/base_epci")
+data2000 <- read.csv("epcisanscom2000.csv", sep=";")
+data2005 <- read.csv("epcisanscom2005.csv", sep=";")
+data2010 <- read.csv("epcisanscom2010.csv", sep=";")
+data2015 <- read.csv("epcisanscom2015.csv", sep=";")
+
+data <- data2000 %>% select(siren_epci, fisc_epci, nb_com_epci)
+data_aux <- data2005 %>% select(siren_epci, fisc_epci, nb_com_epci)
+colnames(data) <- c("siren_epci","fisc_2000", "nb_com2000")
+data <- join(data, data_aux, by="siren_epci", type="full")
+colnames(data) <-c("siren_epci","fisc2000", "nb_com2000", "fisc2005", "nb_com2005")
+data_aux <- data2010 %>% select(siren_epci, fisc_epci_2010, nbcom_epci_2010)
+data <- join(data, data_aux, by="siren_epci", type="full")
+colnames(data) <-c("siren_epci","fisc2000", "nb_com2000", "fisc2005", "nb_com2005","fisc2010", "nb_com2010")
+data_aux <- data2015 %>% select(siren_epci, fisc_epci2015, nb_com_epci_2015)
+data <- join(data, data_aux, by="siren_epci", type="full")
+colnames(data) <-c("siren_epci","fisc2000", "nb_com2000", "fisc2005", "nb_com2005","fisc2010", "nb_com2010","fisc2015", "nb_com2015")
+data[data=="4TX"]<-"FA"
+#write.csv(data, "data_epci.csv")
+
+
+
 # premier travail en coupe
 city <- filter(city_all, annee == 2014)
 #city <- city_all
