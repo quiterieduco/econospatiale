@@ -137,7 +137,30 @@ data_regions <- dataset %>% filter(CODE_REG %in% c(11,32,44,28))
 save(data_regions, file = "data_regions.RData")
 data_reg <- as(data_regions, "Spatial")
 save(data_reg, file = "data_reg.RData")
+# Utilisation des données des collectivités locales
+library(plyr)
 
+
+#-------------------------------------------------------------------------
+# Utilisation des données des collectivités locales sur les EPCI
+setwd("//paradis/eleves/QDUCO/GitHub/base_epci")
+data2000 <- read.csv("epcicom2000.csv", sep=";")
+data2005 <- read.csv("epcicom2005.csv", sep=";")
+data2010 <- read.csv("epcicom2010.csv", sep=";")
+data2015 <- read.csv("epcicom2015.csv", sep=";")
+
+data <- data2000 %>% select(insee,siren_epci, fisc_epci, nb_com_epci)
+data_aux <- data2005 %>% select(insee,siren_epci, fisc_epci, nb_com_epci)
+colnames(data) <- c("insee","siren_epci","fisc_2000", "nb_com2000")
+data <- join(data, data_aux, by=c("insee","siren_epci"), type="full")
+colnames(data) <-c("insee","siren_epci","fisc2000", "nb_com2000", "fisc2005", "nb_com2005")
+data_aux <- data2010 %>% select(insee,siren_epci, fisc_epci_2010, nbcom_epci_2010)
+data <- join(data, data_aux, by=c("insee","siren_epci"), type="full")
+colnames(data) <-c("insee","siren_epci","fisc2000", "nb_com2000", "fisc2005", "nb_com2005","fisc2010", "nb_com2010")
+data_aux <- data2015 %>% select(insee,siren_epci, fisc_epci2015, nb_com_epci_2015)
+data <- join(data, data_aux, by=c("insee","siren_epci"), type="full")
+colnames(data) <-c("insee","siren_epci","fisc2000", "nb_com2000", "fisc2005", "nb_com2005","fisc2010", "nb_com2010","fisc2015", "nb_com2015")
+write.csv(data, "data_epci_com.csv")
 # -------------------------------------------------------------------------
 load("data_regions.RData")
 ggplot(data = data_regions) + geom_sf(aes(fill = taxe_habit),colour = NA) +
